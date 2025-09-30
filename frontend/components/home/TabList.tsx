@@ -57,6 +57,15 @@ const TabList = () => {
         </NavLink>
       </li>
 
+      <li className="nav-item">
+        <NavLink
+          href={`/?bookmark=${currentUser?.username}`}
+          as={`/?bookmark=${currentUser?.username}`}
+        >
+          Bookmarked Articles
+        </NavLink>
+      </li>
+
       <Maybe test={!!tag}>
         <li className="nav-item">
           <CustomLink

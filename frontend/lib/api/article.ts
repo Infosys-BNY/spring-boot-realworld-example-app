@@ -47,6 +47,15 @@ const ArticleAPI = {
   unfavorite: (slug) =>
     axios.delete(`${SERVER_BASE_URL}/articles/${slug}/favorite`),
 
+  bookmark: (slug) =>
+    axios.post(`${SERVER_BASE_URL}/articles/${slug}/bookmark`),
+
+  unbookmark: (slug) =>
+    axios.delete(`${SERVER_BASE_URL}/articles/${slug}/bookmark`),
+
+  bookmarkedArticles: (page, limit = 10) =>
+    axios.get(`${SERVER_BASE_URL}/articles/bookmarked?${getQuery(limit, page)}`),
+
   update: async (article, token) => {
     const { data, status } = await axios.put(
       `${SERVER_BASE_URL}/articles/${article.slug}`,

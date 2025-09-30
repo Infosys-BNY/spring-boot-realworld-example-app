@@ -57,4 +57,14 @@ public class ArticlesApi {
         articleQueryService.findRecentArticles(
             tag, author, favoritedBy, new Page(offset, limit), user));
   }
+
+  @GetMapping(path = "bookmarked")
+  public ResponseEntity getBookmarkedArticles(
+      @RequestParam(value = "offset", defaultValue = "0") int offset,
+      @RequestParam(value = "limit", defaultValue = "20") int limit,
+      @AuthenticationPrincipal User user) {
+    return ResponseEntity.ok(
+        articleQueryService.findBookmarkedArticles(
+            user.getUsername(), new Page(offset, limit), user));
+  }
 }

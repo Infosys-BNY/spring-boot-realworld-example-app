@@ -26,7 +26,7 @@ const ArticleList = () => {
   const { vw } = useViewport();
   const router = useRouter();
   const { asPath, pathname, query } = router;
-  const { favorite, follow, tag, pid } = query;
+  const { favorite, follow, tag, pid, bookmark } = query;
 
   const isProfilePage = pathname.startsWith(`/profile`);
 
@@ -38,15 +38,25 @@ const ArticleList = () => {
         page * DEFAULT_LIMIT
       }`;
       break;
+    case isProfilePage && !!bookmark:
+      fetchURL = `${SERVER_BASE_URL}/articles?bookmarked=${encodeURIComponent(
+        String(pid)
+      )}&offset=${page * DEFAULT_LIMIT}`;
+      break;
     case isProfilePage && !!favorite:
       fetchURL = `${SERVER_BASE_URL}/articles?favorited=${encodeURIComponent(
         String(pid)
       )}&offset=${page * DEFAULT_LIMIT}`;
       break;
-    case isProfilePage && !favorite:
+    case isProfilePage && !favorite && !bookmark:
       fetchURL = `${SERVER_BASE_URL}/articles?author=${encodeURIComponent(
         String(pid)
       )}&offset=${page * DEFAULT_LIMIT}`;
+      break;
+    case !isProfilePage && !!bookmark:
+      fetchURL = `${SERVER_BASE_URL}/articles/bookmarked?offset=${
+        page * DEFAULT_LIMIT
+      }`;
       break;
     case !isProfilePage && !!follow:
       fetchURL = `${SERVER_BASE_URL}/articles/feed?offset=${
