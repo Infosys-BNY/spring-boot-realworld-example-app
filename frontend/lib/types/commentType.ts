@@ -9,6 +9,9 @@ export type CommentType = {
   slug: string;
   author: Author;
   updatedAt: number;
+  likeCount: number;
+  dislikeCount: number;
+  userReaction?: 'LIKE' | 'DISLIKE';
 };
 
 export type Author = {

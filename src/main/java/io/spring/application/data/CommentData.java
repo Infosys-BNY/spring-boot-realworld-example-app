@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.spring.application.DateTimeCursor;
 import io.spring.application.Node;
+import io.spring.core.comment.ReactionType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,6 +19,9 @@ public class CommentData implements Node {
   @JsonIgnore private String articleId;
   private DateTime createdAt;
   private DateTime updatedAt;
+  private Integer likeCount;
+  private Integer dislikeCount;
+  private ReactionType userReaction;
 
   @JsonProperty("author")
   private ProfileData profileData;
