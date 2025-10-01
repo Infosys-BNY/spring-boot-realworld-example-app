@@ -37,7 +37,7 @@ const CommentList = () => {
     <div>
       <CommentInput />
       {comments.map((comment: CommentType) => (
-        <Comment key={comment.id} comment={comment} />
+        <Comment key={comment.id} comment={comment} slug={pid} />
       ))}
     </div>
   );

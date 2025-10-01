@@ -27,6 +27,39 @@ const CommentAPI = {
 
   forArticle: (slug) =>
     axios.get(`${SERVER_BASE_URL}/articles/${slug}/comments`),
+
+  like: async (commentId) => {
+    try {
+      const response = await axios.post(
+        `${SERVER_BASE_URL}/comments/${commentId}/like`
+      );
+      return response;
+    } catch (error) {
+      return error.response;
+    }
+  },
+
+  dislike: async (commentId) => {
+    try {
+      const response = await axios.post(
+        `${SERVER_BASE_URL}/comments/${commentId}/dislike`
+      );
+      return response;
+    } catch (error) {
+      return error.response;
+    }
+  },
+
+  removeReaction: async (commentId) => {
+    try {
+      const response = await axios.delete(
+        `${SERVER_BASE_URL}/comments/${commentId}/reaction`
+      );
+      return response;
+    } catch (error) {
+      return error.response;
+    }
+  },
 };
 
 export default CommentAPI;

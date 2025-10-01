@@ -2,6 +2,7 @@ package io.spring.application;
 
 import io.spring.application.data.CommentData;
 import io.spring.application.data.CommentReactionCount;
+import io.spring.core.comment.CommentReaction;
 import io.spring.core.comment.ReactionType;
 import io.spring.core.user.User;
 import io.spring.infrastructure.mybatis.readservice.CommentReactionsReadService;
@@ -127,10 +128,13 @@ public class CommentQueryService {
           }
         });
     if (user != null) {
-      Map<String, ReactionType> userReactions =
-          commentReactionsReadService.getUserReactions(commentIds, user.getId());
-      if (userReactions != null) {
-        comments.forEach(comment -> comment.setUserReaction(userReactions.get(comment.getId())));
+      List<CommentReaction> userReactions =
+          commentReactionsReadService.getUserReactionsForComments(commentIds, user.getId());
+      if (userReactions != null && !userReactions.isEmpty()) {
+        Map<String, ReactionType> userReactionsMap =
+            userReactions.stream()
+                .collect(Collectors.toMap(CommentReaction::getCommentId, CommentReaction::getType));
+        comments.forEach(comment -> comment.setUserReaction(userReactionsMap.get(comment.getId())));
       }
     }
   }

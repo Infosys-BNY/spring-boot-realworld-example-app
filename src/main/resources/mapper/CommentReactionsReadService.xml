@@ -3,34 +3,37 @@
 <mapper namespace="io.spring.infrastructure.mybatis.readservice.CommentReactionsReadService">
     <select id="getReactionCounts" resultMap="transfer.data.commentReactionCount">
         select
-          C.id,
+          CR.comment_id as id,
           SUM(CASE WHEN CR.reaction_type = 'LIKE' THEN 1 ELSE 0 END) as likeCount,
           SUM(CASE WHEN CR.reaction_type = 'DISLIKE' THEN 1 ELSE 0 END) as dislikeCount
-        from comments C
-        left join comment_reactions CR on C.id = CR.comment_id
-        where C.id = #{commentId}
-        group by C.id
+        from comment_reactions CR
+        where CR.comment_id = #{commentId}
+        group by CR.comment_id
     </select>
     <select id="getReactionCountsForComments" resultMap="transfer.data.commentReactionCount">
         select
-          C.id,
+          CR.comment_id as id,
           SUM(CASE WHEN CR.reaction_type = 'LIKE' THEN 1 ELSE 0 END) as likeCount,
           SUM(CASE WHEN CR.reaction_type = 'DISLIKE' THEN 1 ELSE 0 END) as dislikeCount
-        from comments C
-        left join comment_reactions CR on C.id = CR.comment_id
-        where C.id in
+        from comment_reactions CR
+        where CR.comment_id in
         <foreach collection="commentIds" item="item" separator="," open="(" close=")">
             #{item}
         </foreach>
-        group by C.id
+        group by CR.comment_id
     </select>
     <select id="getUserReaction" resultType="io.spring.core.comment.ReactionType">
         select reaction_type
         from comment_reactions
         where comment_id = #{commentId} and user_id = #{userId}
     </select>
-    <select id="getUserReactions" resultType="map">
-        select comment_id as key, reaction_type as value
+    <select id="getUserReactionsForComments" resultMap="commentReaction">
+        select
+          id reactionId,
+          comment_id reactionCommentId,
+          user_id reactionUserId,
+          reaction_type reactionType,
+          created_at reactionCreatedAt
         from comment_reactions
         where comment_id in
         <foreach collection="commentIds" item="item" separator="," open="(" close=")">
@@ -38,4 +41,11 @@
         </foreach>
         and user_id = #{userId}
     </select>
+    <resultMap id="commentReaction" type="io.spring.core.comment.CommentReaction">
+        <id column="reactionId" property="id"/>
+        <result column="reactionCommentId" property="commentId"/>
+        <result column="reactionUserId" property="userId"/>
+        <result column="reactionType" property="type"/>
+        <result column="reactionCreatedAt" property="createdAt"/>
+    </resultMap>
 </mapper>

@@ -5,10 +5,11 @@ import CustomLink from "../common/CustomLink";
 import CustomImage from "../common/CustomImage";
 import Maybe from "../common/Maybe";
 import DeleteButton from "./DeleteButton";
+import CommentReactions from "./CommentReactions";
 import checkLogin from "../../lib/utils/checkLogin";
 import storage from "../../lib/utils/storage";
 
-const Comment = ({ comment }) => {
+const Comment = ({ comment, slug }) => {
   const { data: currentUser } = useSWR("user", storage);
   const isLoggedIn = checkLogin(currentUser);
   const canModify =
@@ -44,6 +45,9 @@ const Comment = ({ comment }) => {
         </span>
         <Maybe test={canModify}>
           <DeleteButton commentId={comment.id} />
+        </Maybe>
+        <Maybe test={isLoggedIn}>
+          <CommentReactions comment={comment} slug={slug} />
         </Maybe>
       </div>
     </div>

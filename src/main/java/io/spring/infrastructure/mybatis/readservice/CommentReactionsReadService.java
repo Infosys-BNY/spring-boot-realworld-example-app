@@ -1,9 +1,9 @@
 package io.spring.infrastructure.mybatis.readservice;
 
 import io.spring.application.data.CommentReactionCount;
+import io.spring.core.comment.CommentReaction;
 import io.spring.core.comment.ReactionType;
 import java.util.List;
-import java.util.Map;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -17,6 +17,6 @@ public interface CommentReactionsReadService {
   ReactionType getUserReaction(
       @Param("commentId") String commentId, @Param("userId") String userId);
 
-  Map<String, ReactionType> getUserReactions(
+  List<CommentReaction> getUserReactionsForComments(
       @Param("commentIds") List<String> commentIds, @Param("userId") String userId);
 }
