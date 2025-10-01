@@ -6,9 +6,11 @@ export type CommentType = {
   createdAt: number;
   id: string;
   body: string;
-  slug: string;
   author: Author;
   updatedAt: number;
+  likeCount: number;
+  dislikeCount: number;
+  userReaction?: 'LIKE' | 'DISLIKE';
 };
 
 export type Author = {

@@ -117,6 +117,9 @@ public class CommentDatafetcher {
         .body(comment.getBody())
         .updatedAt(ISODateTimeFormat.dateTime().withZoneUTC().print(comment.getCreatedAt()))
         .createdAt(ISODateTimeFormat.dateTime().withZoneUTC().print(comment.getCreatedAt()))
+        .likeCount(comment.getLikeCount())
+        .dislikeCount(comment.getDislikeCount())
+        .userReaction(comment.getUserReaction() != null ? comment.getUserReaction().name() : null)
         .build();
   }
 }
