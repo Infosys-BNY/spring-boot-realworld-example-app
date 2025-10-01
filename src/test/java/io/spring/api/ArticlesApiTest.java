@@ -38,6 +38,9 @@ public class ArticlesApiTest extends TestWithCurrentUser {
 
   @MockBean private ArticleCommandService articleCommandService;
 
+  @MockBean
+  private io.spring.infrastructure.mybatis.readservice.ArticleReadService articleReadService;
+
   @Override
   @BeforeEach
   public void setUp() throws Exception {
@@ -61,6 +64,8 @@ public class ArticlesApiTest extends TestWithCurrentUser {
             title,
             description,
             body,
+            false,
+            0,
             false,
             0,
             new DateTime(),
@@ -130,6 +135,8 @@ public class ArticlesApiTest extends TestWithCurrentUser {
             title,
             description,
             body,
+            false,
+            0,
             false,
             0,
             new DateTime(),

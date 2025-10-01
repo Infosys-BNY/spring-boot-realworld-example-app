@@ -1,13 +1,11 @@
 package io.spring.api;
 
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
-import static org.hamcrest.core.IsEqual.equalTo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import io.spring.JacksonCustomizations;
 import io.spring.api.security.WebSecurityConfig;
 import io.spring.application.ArticleQueryService;
@@ -16,9 +14,8 @@ import io.spring.application.data.ProfileData;
 import io.spring.core.article.Article;
 import io.spring.core.article.ArticleRepository;
 import io.spring.core.article.Tag;
-import io.spring.core.favorite.ArticleFavorite;
-import io.spring.core.favorite.ArticleFavoriteRepository;
-import io.spring.core.user.User;
+import io.spring.core.bookmark.ArticleBookmark;
+import io.spring.core.bookmark.ArticleBookmarkRepository;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -30,12 +27,13 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
 
-@WebMvcTest(ArticleFavoriteApi.class)
+@WebMvcTest(ArticleBookmarkApi.class)
 @Import({WebSecurityConfig.class, JacksonCustomizations.class})
-public class ArticleFavoriteApiTest extends TestWithCurrentUser {
+public class ArticleBookmarkApiTest extends TestWithCurrentUser {
+
   @Autowired private MockMvc mvc;
 
-  @MockBean private ArticleFavoriteRepository articleFavoriteRepository;
+  @MockBean private ArticleBookmarkRepository articleBookmarkRepository;
 
   @MockBean private ArticleRepository articleRepository;
 
@@ -43,12 +41,12 @@ public class ArticleFavoriteApiTest extends TestWithCurrentUser {
 
   private Article article;
 
+  @Override
   @BeforeEach
   public void setUp() throws Exception {
     super.setUp();
-    RestAssuredMockMvc.mockMvc(mvc);
-    User anotherUser = new User("other@test.com", "other", "123", "", "");
-    article = new Article("title", "desc", "body", Arrays.asList("java"), anotherUser.getId());
+    io.restassured.module.mockmvc.RestAssuredMockMvc.mockMvc(mvc);
+    article = new Article("title", "desc", "body", Arrays.asList("java"), user.getId());
     when(articleRepository.findBySlug(eq(article.getSlug()))).thenReturn(Optional.of(article));
     ArticleData articleData =
         new ArticleData(
@@ -57,49 +55,46 @@ public class ArticleFavoriteApiTest extends TestWithCurrentUser {
             article.getTitle(),
             article.getDescription(),
             article.getBody(),
-            true,
-            1,
+            false,
+            0,
             false,
             0,
             article.getCreatedAt(),
             article.getUpdatedAt(),
             article.getTags().stream().map(Tag::getName).collect(Collectors.toList()),
             new ProfileData(
-                anotherUser.getId(),
-                anotherUser.getUsername(),
-                anotherUser.getBio(),
-                anotherUser.getImage(),
-                false));
-    when(articleQueryService.findBySlug(eq(articleData.getSlug()), eq(user)))
+                user.getId(), user.getUsername(), user.getBio(), user.getImage(), false));
+    when(articleQueryService.findBySlug(eq(article.getSlug()), eq(user)))
         .thenReturn(Optional.of(articleData));
   }
 
   @Test
-  public void should_favorite_an_article_success() throws Exception {
+  public void should_bookmark_an_article_success() throws Exception {
     given()
+        .contentType("application/json")
         .header("Authorization", "Token " + token)
         .when()
-        .post("/articles/{slug}/favorite", article.getSlug())
-        .prettyPeek()
+        .post("/articles/{slug}/bookmark", article.getSlug())
         .then()
-        .statusCode(200)
-        .body("article.id", equalTo(article.getId()));
+        .statusCode(200);
 
-    verify(articleFavoriteRepository).save(any());
+    verify(articleBookmarkRepository).save(any(ArticleBookmark.class));
   }
 
   @Test
-  public void should_unfavorite_an_article_success() throws Exception {
-    when(articleFavoriteRepository.find(eq(article.getId()), eq(user.getId())))
-        .thenReturn(Optional.of(new ArticleFavorite(article.getId(), user.getId())));
+  public void should_unbookmark_an_article_success() throws Exception {
+    ArticleBookmark articleBookmark = new ArticleBookmark(article.getId(), user.getId());
+    when(articleBookmarkRepository.find(eq(article.getId()), eq(user.getId())))
+        .thenReturn(Optional.of(articleBookmark));
+
     given()
+        .contentType("application/json")
         .header("Authorization", "Token " + token)
         .when()
-        .delete("/articles/{slug}/favorite", article.getSlug())
-        .prettyPeek()
+        .delete("/articles/{slug}/bookmark", article.getSlug())
         .then()
-        .statusCode(200)
-        .body("article.id", equalTo(article.getId()));
-    verify(articleFavoriteRepository).remove(new ArticleFavorite(article.getId(), user.getId()));
+        .statusCode(200);
+
+    verify(articleBookmarkRepository).remove(eq(articleBookmark));
   }
 }
