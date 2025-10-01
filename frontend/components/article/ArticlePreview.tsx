@@ -13,6 +13,8 @@ import storage from "../../lib/utils/storage";
 
 const FAVORITED_CLASS = "btn btn-sm btn-primary";
 const NOT_FAVORITED_CLASS = "btn btn-sm btn-outline-primary";
+const BOOKMARKED_CLASS = "btn btn-sm btn-success";
+const NOT_BOOKMARKED_CLASS = "btn btn-sm btn-outline-success";
 
 const ArticlePreview = ({ article }) => {
   const setPage = usePageDispatch();
@@ -67,6 +69,43 @@ const ArticlePreview = ({ article }) => {
     }
   };
 
+  const handleClickBookmark = async (slug) => {
+    if (!isLoggedIn) {
+      Router.push(`/user/login`);
+      return;
+    }
+
+    setPreview({
+      ...preview,
+      bookmarked: !preview.bookmarked,
+    });
+
+    try {
+      if (preview.bookmarked) {
+        await axios.delete(`${SERVER_BASE_URL}/articles/${slug}/bookmark`, {
+          headers: {
+            Authorization: `Token ${currentUser?.token}`,
+          },
+        });
+      } else {
+        await axios.post(
+          `${SERVER_BASE_URL}/articles/${slug}/bookmark`,
+          {},
+          {
+            headers: {
+              Authorization: `Token ${currentUser?.token}`,
+            },
+          }
+        );
+      }
+    } catch (error) {
+      setPreview({
+        ...preview,
+        bookmarked: !preview.bookmarked,
+      });
+    }
+  };
+
   if (!article) return;
 
   return (
@@ -103,6 +142,15 @@ const ArticlePreview = ({ article }) => {
             onClick={() => handleClickFavorite(preview.slug)}
           >
             <i className="ion-heart" /> {preview.favoritesCount}
+          </button>
+          {" "}
+          <button
+            className={
+              preview.bookmarked ? BOOKMARKED_CLASS : NOT_BOOKMARKED_CLASS
+            }
+            onClick={() => handleClickBookmark(preview.slug)}
+          >
+            <i className="ion-bookmark" />
           </button>
         </div>
       </div>

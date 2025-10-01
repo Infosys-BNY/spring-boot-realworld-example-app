@@ -8,6 +8,13 @@
         </constructor>
     </resultMap>
 
+    <resultMap id="bookmarkCount" type="io.spring.application.data.ArticleBookmarkCount">
+        <constructor>
+            <idArg column="id" javaType="string"/>
+            <arg column="bookmarkCount" javaType="integer"/>
+        </constructor>
+    </resultMap>
+
     <resultMap id="profileData" type="io.spring.application.data.ProfileData">
         <id column="userId" property="id"/>
         <result column="userUsername" property="username"/>

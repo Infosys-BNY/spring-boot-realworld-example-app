@@ -157,4 +157,22 @@
     <resultMap id="articleId" type="string">
         <id javaType="string" column="articleId"/>
     </resultMap>
+
+    <select id="queryBookmarkedArticles" resultMap="articleId">
+        select
+        A.id articleId
+        from articles A
+        left join article_bookmarks AB on A.id = AB.article_id
+        where AB.user_id = #{userId}
+        order by A.created_at desc
+        limit #{page.offset}, #{page.limit}
+    </select>
+
+    <select id="countBookmarkedArticles" resultType="java.lang.Integer">
+        select
+        count(*)
+        from articles A
+        left join article_bookmarks AB on A.id = AB.article_id
+        where AB.user_id = #{userId}
+    </select>
 </mapper>
