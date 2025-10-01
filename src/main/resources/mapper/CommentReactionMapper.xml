@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.spring.infrastructure.mybatis.mapper.CommentReactionMapper">
+    <insert id="insert">
+        insert into comment_reactions (id, comment_id, user_id, reaction_type, created_at) 
+        values (#{reaction.id}, #{reaction.commentId}, #{reaction.userId}, #{reaction.reactionType}, #{reaction.createdAt})
+    </insert>
+    <delete id="delete">
+        delete from comment_reactions where comment_id = #{reaction.commentId} and user_id = #{reaction.userId}
+    </delete>
+    <select id="find" resultMap="commentReaction">
+        select
+          CR.id commentReactionId,
+          CR.comment_id commentReactionCommentId,
+          CR.user_id commentReactionUserId,
+          CR.reaction_type commentReactionType,
+          CR.created_at commentReactionCreatedAt
+          from comment_reactions CR
+          where CR.comment_id = #{commentId} and CR.user_id = #{userId}
+    </select>
+    <resultMap id="commentReaction" type="io.spring.core.reaction.CommentReaction">
+        <id column="commentReactionId" property="id"/>
+        <result column="commentReactionCommentId" property="commentId"/>
+        <result column="commentReactionUserId" property="userId"/>
+        <result column="commentReactionType" property="reactionType"/>
+        <result column="commentReactionCreatedAt" property="createdAt"/>
+    </resultMap>
+</mapper>
