@@ -347,7 +347,7 @@ public class UsersApiTest {
         .post("/users")
         .then()
         .statusCode(422)
-        .body("errors.email[0]", equalTo("should be an email"));
+        .body("errors.email[0]", equalTo("can't be empty"));
   }
 
   @Test
