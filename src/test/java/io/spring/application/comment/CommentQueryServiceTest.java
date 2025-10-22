@@ -11,6 +11,7 @@ import io.spring.core.user.User;
 import io.spring.core.user.UserRepository;
 import io.spring.infrastructure.DbTestBase;
 import io.spring.infrastructure.repository.MyBatisArticleRepository;
+import io.spring.infrastructure.repository.MyBatisCommentReactionRepository;
 import io.spring.infrastructure.repository.MyBatisCommentRepository;
 import io.spring.infrastructure.repository.MyBatisUserRepository;
 import java.util.Arrays;
@@ -26,7 +27,8 @@ import org.springframework.context.annotation.Import;
   MyBatisCommentRepository.class,
   MyBatisUserRepository.class,
   CommentQueryService.class,
-  MyBatisArticleRepository.class
+  MyBatisArticleRepository.class,
+  MyBatisCommentReactionRepository.class
 })
 public class CommentQueryServiceTest extends DbTestBase {
   @Autowired private CommentRepository commentRepository;

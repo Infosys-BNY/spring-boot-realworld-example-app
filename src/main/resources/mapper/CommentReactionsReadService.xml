@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.spring.infrastructure.mybatis.readservice.CommentReactionsReadService">
+    <select id="getUserReaction" resultMap="io.spring.infrastructure.mybatis.mapper.CommentReactionMapper.commentReaction">
+        select
+          CR.id commentReactionId,
+          CR.comment_id commentReactionCommentId,
+          CR.user_id commentReactionUserId,
+          CR.reaction_type commentReactionType,
+          CR.created_at commentReactionCreatedAt
+        from comment_reactions CR
+        where CR.comment_id = #{commentId} and CR.user_id = #{userId}
+    </select>
+    <select id="getReactionCountsForComments" resultMap="transfer.data.commentReactionCount">
+        select 
+          C.id,
+          sum(case when CR.reaction_type = 'LIKE' then 1 else 0 end) as likeCount,
+          sum(case when CR.reaction_type = 'DISLIKE' then 1 else 0 end) as dislikeCount
+        from comments C
+        left join comment_reactions CR on C.id = CR.comment_id
+        where C.id in
+        <foreach collection="ids" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+        group by C.id
+    </select>
+    <select id="getUserReactions" resultType="io.spring.application.data.CommentUserReaction">
+        select
+          CR.comment_id as id,
+          CR.reaction_type as reactionType
+        from comment_reactions CR
+        where CR.comment_id in
+        <foreach collection="ids" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+        and CR.user_id = #{userId}
+    </select>
+</mapper>

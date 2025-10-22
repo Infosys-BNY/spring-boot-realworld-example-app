@@ -9,7 +9,8 @@ import LoadingSpinner from "../common/LoadingSpinner";
 
 import { CommentType } from "../../lib/types/commentType";
 import { SERVER_BASE_URL } from "../../lib/utils/constant";
-import fetcher from "../../lib/utils/fetcher";
+import storage from "../../lib/utils/storage";
+import CommentAPI from "../../lib/api/comment";
 
 const CommentList = () => {
   const router = useRouter();
@@ -17,9 +18,10 @@ const CommentList = () => {
     query: { pid },
   } = router;
 
+  const { data: currentUser } = useSWR("user", storage);
   const { data, error } = useSWR(
-    `${SERVER_BASE_URL}/articles/${pid}/comments`,
-    fetcher
+    pid ? `${SERVER_BASE_URL}/articles/${pid}/comments` : null,
+    () => CommentAPI.forArticle(pid as string, currentUser?.token)
   );
 
   if (!data) {
@@ -37,7 +39,7 @@ const CommentList = () => {
     <div>
       <CommentInput />
       {comments.map((comment: CommentType) => (
-        <Comment key={comment.id} comment={comment} />
+        <Comment key={comment.id} comment={comment} articleSlug={pid as string} />
       ))}
     </div>
   );

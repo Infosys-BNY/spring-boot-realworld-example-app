@@ -58,6 +58,9 @@ public class CommentsApiTest extends TestWithCurrentUser {
             comment.getArticleId(),
             comment.getCreatedAt(),
             comment.getCreatedAt(),
+            0,
+            0,
+            null,
             new ProfileData(
                 user.getId(), user.getUsername(), user.getBio(), user.getImage(), false));
   }
