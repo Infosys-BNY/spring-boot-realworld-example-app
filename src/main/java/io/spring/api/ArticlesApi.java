@@ -4,9 +4,13 @@ import io.spring.application.ArticleQueryService;
 import io.spring.application.Page;
 import io.spring.application.article.ArticleCommandService;
 import io.spring.application.article.NewArticleParam;
+import io.spring.application.data.ArticleData;
 import io.spring.core.article.Article;
 import io.spring.core.user.User;
+import io.spring.infrastructure.mybatis.readservice.ArticleReadService;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ArticlesApi {
   private ArticleCommandService articleCommandService;
   private ArticleQueryService articleQueryService;
+  private ArticleReadService articleReadService;
 
   @PostMapping
   public ResponseEntity createArticle(
@@ -56,5 +61,34 @@ public class ArticlesApi {
     return ResponseEntity.ok(
         articleQueryService.findRecentArticles(
             tag, author, favoritedBy, new Page(offset, limit), user));
+  }
+
+  @GetMapping(path = "/bookmarked")
+  public ResponseEntity getBookmarkedArticles(
+      @RequestParam(value = "offset", defaultValue = "0") int offset,
+      @RequestParam(value = "limit", defaultValue = "20") int limit,
+      @AuthenticationPrincipal User user) {
+    List<String> articleIds =
+        articleReadService.queryBookmarkedArticles(user.getId(), new Page(offset, limit));
+    int articlesCount = articleReadService.countBookmarkedArticles(user.getId());
+
+    if (articleIds.isEmpty()) {
+      return ResponseEntity.ok(
+          new HashMap<String, Object>() {
+            {
+              put("articles", new ArrayList<>());
+              put("articlesCount", articlesCount);
+            }
+          });
+    }
+
+    List<ArticleData> articles = articleQueryService.findArticles(articleIds, user);
+    return ResponseEntity.ok(
+        new HashMap<String, Object>() {
+          {
+            put("articles", articles);
+            put("articlesCount", articlesCount);
+          }
+        });
   }
 }

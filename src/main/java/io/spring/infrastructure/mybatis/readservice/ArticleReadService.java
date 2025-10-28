@@ -39,4 +39,8 @@ public interface ArticleReadService {
       @Param("author") String author,
       @Param("favoritedBy") String favoritedBy,
       @Param("page") CursorPageParameter page);
+
+  List<String> queryBookmarkedArticles(@Param("userId") String userId, @Param("page") Page page);
+
+  int countBookmarkedArticles(@Param("userId") String userId);
 }

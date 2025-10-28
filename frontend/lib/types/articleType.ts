@@ -17,6 +17,7 @@ export type ArticleType = {
   updatedAt: number;
   favoritesCount: number;
   favorited: boolean;
+  bookmarked: boolean;
 };
 
 export type Author = {

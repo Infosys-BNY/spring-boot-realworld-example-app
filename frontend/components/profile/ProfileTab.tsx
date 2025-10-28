@@ -23,6 +23,14 @@ const ProfileTab = ({ profile }) => {
           <span onClick={() => setPage(0)}>Favorited Articles</span>
         </NavLink>
       </li>
+      <li className="nav-item">
+        <NavLink
+          href="/profile/[pid]?bookmarked=true"
+          as={`/profile/${encodeURIComponent(profile.username)}?bookmarked=true`}
+        >
+          <span onClick={() => setPage(0)}>Bookmarked Articles</span>
+        </NavLink>
+      </li>
     </ul>
   );
 };

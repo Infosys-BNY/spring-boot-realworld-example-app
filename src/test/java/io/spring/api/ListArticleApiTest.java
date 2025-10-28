@@ -31,6 +31,9 @@ public class ListArticleApiTest extends TestWithCurrentUser {
 
   @MockBean private ArticleCommandService articleCommandService;
 
+  @MockBean
+  private io.spring.infrastructure.mybatis.readservice.ArticleReadService articleReadService;
+
   @Autowired private MockMvc mvc;
 
   @Override
